@@ -1,0 +1,12 @@
+fos_user:
+    db_driver: mongodb # other valid values are 'mongodb', 'couchdb' and 'propel'
+    firewall_name: secured_area
+    user_class: AppBundle\Document\User
+    registration:
+        confirmation:
+            enabled:    false # change to true for required email confirmation
+    from_email:
+        address: "%mailer_user%"
+        sender_name: "%mailer_user%"
+#    service:
+#        user_manager: fos_user.user_manager

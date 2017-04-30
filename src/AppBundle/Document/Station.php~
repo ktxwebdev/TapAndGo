@@ -5,14 +5,14 @@ namespace AppBundle\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
- * AppBundle\Document\City
+ * AppBundle\Document\Station
  *
  * @ODM\Document(
- *     repositoryClass="AppBundle\Document\CityRepository"
+ *     repositoryClass="AppBundle\Document\StationRepository"
  * )
  * @ODM\ChangeTrackingPolicy("DEFERRED_IMPLICIT")
  */
-class City
+class Station
 {
     /**
      * @var MongoId $id
@@ -29,6 +29,13 @@ class City
     protected $name;
 
     /**
+     * @var string $address
+     *
+     * @ODM\Field(name="address", type="string")
+     */
+    protected $address;
+
+    /**
      * @var string $lat
      *
      * @ODM\Field(name="lat", type="string")
@@ -43,23 +50,26 @@ class City
     protected $long;
 
     /**
+     * @var int $capacity
+     *
+     * @ODM\Field(name="capacity", type="int")
+     */
+    protected $capacity;
+
+    /**
+     * @var int $numberOfBikeAvailable
+     *
+     * @ODM\Field(name="numberOfBikeAvailable", type="int")
+     */
+    protected $numberOfBikeAvailable;
+
+    /**
      * @var string $status
      *
      * @ODM\Field(name="status", type="string")
      */
     protected $status;
-    
-    /**
-     * @var array $stations
-     *
-     * @ODM\ReferenceMany(targetDocument="AppBundle\Document\Station", simple=true)
-     */
-    protected $stations;
-    
-    public function __construct()
-    {
-        $this->stations = new \Doctrine\Common\Collections\ArrayCollection();
-    }
+
 
     /**
      * Get id
@@ -91,6 +101,28 @@ class City
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * Set address
+     *
+     * @param string $address
+     * @return self
+     */
+    public function setAddress($address)
+    {
+        $this->address = $address;
+        return $this;
+    }
+
+    /**
+     * Get address
+     *
+     * @return string $address
+     */
+    public function getAddress()
+    {
+        return $this->address;
     }
 
     /**
@@ -138,6 +170,50 @@ class City
     }
 
     /**
+     * Set capacity
+     *
+     * @param int $capacity
+     * @return self
+     */
+    public function setCapacity($capacity)
+    {
+        $this->capacity = $capacity;
+        return $this;
+    }
+
+    /**
+     * Get capacity
+     *
+     * @return int $capacity
+     */
+    public function getCapacity()
+    {
+        return $this->capacity;
+    }
+
+    /**
+     * Set numberOfBikeAvailable
+     *
+     * @param int $numberOfBikeAvailable
+     * @return self
+     */
+    public function setNumberOfBikeAvailable($numberOfBikeAvailable)
+    {
+        $this->numberOfBikeAvailable = $numberOfBikeAvailable;
+        return $this;
+    }
+
+    /**
+     * Get numberOfBikeAvailable
+     *
+     * @return int $numberOfBikeAvailable
+     */
+    public function getNumberOfBikeAvailable()
+    {
+        return $this->numberOfBikeAvailable;
+    }
+
+    /**
      * Set status
      *
      * @param string $status
@@ -157,35 +233,5 @@ class City
     public function getStatus()
     {
         return $this->status;
-    }
-    
-    /**
-     * Add station
-     *
-     * @param AppBundle\Document\Station $station
-     */
-    public function addStation(\AppBundle\Document\Station $station)
-    {
-        $this->stations[] = $station;
-    }
-
-    /**
-     * Remove station
-     *
-     * @param AppBundle\Document\Station $station
-     */
-    public function removeStation(\AppBundle\Document\Station $station)
-    {
-        $this->stations->removeElement($station);
-    }
-
-    /**
-     * Get stations
-     *
-     * @return \Doctrine\Common\Collections\Collection $stations
-     */
-    public function getStations()
-    {
-        return $this->stations;
     }
 }

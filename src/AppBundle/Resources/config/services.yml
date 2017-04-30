@@ -1,0 +1,18 @@
+services:
+    #Faker
+    app.faker.generator.factory:
+        class: Faker\Factory
+
+    app.faker.generator:
+        class: Faker\Generator
+        factory: ["@app.faker.generator.factory", create]
+
+    app.faker.city:
+        class: AppBundle\Faker\Provider\City
+        arguments:
+          - "@app.faker.generator"
+          
+    app.faker.station:
+        class: AppBundle\Faker\Provider\Station
+        arguments:
+          - "@app.faker.generator"

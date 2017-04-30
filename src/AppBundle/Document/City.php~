@@ -55,11 +55,6 @@ class City
      * @ODM\ReferenceMany(targetDocument="AppBundle\Document\Station", simple=true)
      */
     protected $stations;
-    
-    public function __construct()
-    {
-        $this->stations = new \Doctrine\Common\Collections\ArrayCollection();
-    }
 
     /**
      * Get id
@@ -157,35 +152,5 @@ class City
     public function getStatus()
     {
         return $this->status;
-    }
-    
-    /**
-     * Add station
-     *
-     * @param AppBundle\Document\Station $station
-     */
-    public function addStation(\AppBundle\Document\Station $station)
-    {
-        $this->stations[] = $station;
-    }
-
-    /**
-     * Remove station
-     *
-     * @param AppBundle\Document\Station $station
-     */
-    public function removeStation(\AppBundle\Document\Station $station)
-    {
-        $this->stations->removeElement($station);
-    }
-
-    /**
-     * Get stations
-     *
-     * @return \Doctrine\Common\Collections\Collection $stations
-     */
-    public function getStations()
-    {
-        return $this->stations;
     }
 }

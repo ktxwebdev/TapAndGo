@@ -17,3 +17,7 @@ parameters:
 
     # A secret key that's used to generate certain security-related tokens
     secret: ThisTokenIsNotSoSecretChangeIt
+
+    api_token: ~
+    tap_and_go_api.domain: 'http://api.domain.name.fr'
+    security.encoders.algorithm: bcrypt

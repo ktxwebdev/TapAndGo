@@ -1,0 +1,9 @@
+tap_and_go_api_city:
+    type:     rest
+    resource: AppBundle\Api\Controller\CityController
+    name_prefix:  tap_and_go_api_
+    
+tap_and_go_api_station:
+    type:     rest
+    resource: AppBundle\Api\Controller\StationController
+    name_prefix:  tap_and_go_api_
