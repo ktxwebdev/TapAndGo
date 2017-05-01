@@ -22,7 +22,8 @@ class AppKernel extends Kernel {
             new FOS\UserBundle\FOSUserBundle(),
             new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
             new Symfony\Bundle\AsseticBundle\AsseticBundle(),
-                        new Braincrafted\Bundle\BootstrapBundle\BraincraftedBootstrapBundle(),
+            new Braincrafted\Bundle\BootstrapBundle\BraincraftedBootstrapBundle(),
+            new UserBundle\UserBundle()
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'), true)) {
