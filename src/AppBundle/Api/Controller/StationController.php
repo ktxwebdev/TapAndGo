@@ -126,7 +126,6 @@ class StationController extends FOSRestController {
             return array('result' => false);
         }
 
-        $bikeCapacity = $station->getBikesCapacity();
         $bikeAvailable = $station->getBikesAvailable();
 
         // Remove a bike for the station
