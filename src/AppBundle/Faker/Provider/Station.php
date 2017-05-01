@@ -5,13 +5,16 @@ namespace AppBundle\Faker\Provider;
 use Faker\Generator;
 use Faker\Provider\Base;
 use AppBundle\Document\Station as StationEntity;
+use AppBundle\Document\Coordinates as CoordinatesEntity;
 
 class Station extends Base {
 
-    public function __construct(Generator $generator) {
+    public function __construct(Generator $generator, $stationStatus) {
         parent::__construct($generator);
 
         $this->generator = $generator;
+
+        $this->stationStatus = $stationStatus;
     }
 
     /**
@@ -25,12 +28,19 @@ class Station extends Base {
 
         $station = new StationEntity();
         $station->setName($this->generator->streetName());
-        $station->setLat($this->generator->latitude());
-        $station->setLong($this->generator->longitude());
+        $station->setDescription($this->generator->text());
         $station->setAddress($this->generator->streetAddress());
-        $station->setCapacity($this->generator->longitude());
-        $station->setNumberOfBikeAvailable($this->generator->numberBetween(0, $capacity));
+        $station->setBikesCapacity($capacity);
+        $station->setBikesAvailable($this->generator->numberBetween(0, $capacity));
+        $station->setStatus($this->generator->randomElement($this->stationStatus));
+
+        $coordinates = new CoordinatesEntity();
+        $coordinates->setLongitude($this->generator->longitude());
+        $coordinates->setLatitude($this->generator->latitude());
+
+        $station->setCoordinates($coordinates);
 
         return $station;
     }
+
 }

@@ -1,45 +1,52 @@
-<h1>City list</h1>
+{% extends '::base.html.twig' %}
 
-<table class="records_list">
-    <thead>
-        <tr>
-            <th>Id</th>
-            <th>Name</th>
-            <th>Lat</th>
-            <th>Long</th>
-            <th>Status</th>
-            <th>Stations</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-    {% for document in documents %}
-        <tr>
-            <td><a href="{{ path('city_show', { 'id': document.id }) }}">{{ document.id }}</a></td>
-            <td>{{ document.name }}</td>
-            <td>{{ document.lat }}</td>
-            <td>{{ document.long }}</td>
-            <td>{{ document.status }}</td>
-            <td>{{ document.stations|length }}</td>
-            <td>
-                <ul>
-                    <li>
-                        <a href="{{ path('city_show', { 'id': document.id }) }}">show</a>
-                    </li>
-                    <li>
-                        <a href="{{ path('city_edit', { 'id': document.id }) }}">edit</a>
-                    </li>
-                </ul>
-            </td>
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
+{% block body %}
+    <div class="page-header">
+        <div class="row">
+            <div class="col-sm-10">
+                <h1>Liste des villes</h1>
+            </div>
+            <div class="col-sm-2">
+                <a class="btn btn-success" href="{{ path('city_new') }}">
+                    <span class="fa fa-plus"></span>
+                    Création d'une ville
+                </a>
+            </div>
+        </div>
+    </div>
+    <table class="table table-responsive table-hover">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Status</th>
+                <th>Nombre de stations</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for document in documents %}
+                {% if document.status == 'activated' %}
+                    {% set tableStatus = "success" %}
+                {% elseif document.status == 'desactivated' %}
+                    {% set tableStatus = "danger" %}
+                {% endif %}
 
-<ul>
-    <li>
-        <a href="{{ path('city_new') }}">
-            Create a new entry
-        </a>
-    </li>
-</ul>
+                <tr class="{{ tableStatus }}">
+                    <td><a href="http://maps.google.com/?q={{ document.coordinates.latitude }},{{ document.coordinates.longitude }},6z" target="_blank">{{ document.name }}</a></td>
+                    <td>{{ document.status }}</td>
+                    <td>{{ document.stations|length }}</td>
+                    <td>
+                        <ul>
+                            <li>
+                                <a href="{{ path('city_show', { 'id': document.id }) }}">Détail</a>
+                            </li>
+                            <li>
+                                <a href="{{ path('city_edit', { 'id': document.id }) }}">Mise à jour</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

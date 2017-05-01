@@ -42,9 +42,12 @@ class LoadStationData extends AbstractFixture implements OrderedFixtureInterface
             for ($i = 0; $i <= $this->faker->numberBetween(0, 15); $i++) {
                 $station = $this->faker->station();
                 
+                $station->setCity($city);
+                
                 $city->addStation($station);
 
                 $manager->persist($station);
+                $manager->persist($station->getCoordinates());
                 $manager->persist($city);
 
                 $this->addReference('station-' . $stationReference, $station);

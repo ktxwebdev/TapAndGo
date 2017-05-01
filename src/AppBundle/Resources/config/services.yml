@@ -11,8 +11,25 @@ services:
         class: AppBundle\Faker\Provider\City
         arguments:
           - "@app.faker.generator"
+          - "%status_city%"
           
     app.faker.station:
         class: AppBundle\Faker\Provider\Station
         arguments:
           - "@app.faker.generator"
+          - "%status_station%"
+          
+    #Form 
+    app.form.type.city:
+        class: AppBundle\Form\CityType
+        arguments:
+            - "%status_city%"
+        tags:
+            - { name: form.type }
+            
+    app.form.type.station:
+        class: AppBundle\Form\StationType
+        arguments:
+            - "%status_station%"
+        tags:
+            - { name: form.type }

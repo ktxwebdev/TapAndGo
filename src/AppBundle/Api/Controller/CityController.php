@@ -21,17 +21,15 @@ class CityController extends FOSRestController {
      *
      * @ApiDoc(
      *  resource=true,
-     *  section="Citys",
+     *  section="City",
      *  description="Get the city list",
      *  output={"class"="Sonata\CityBundle\Model\CityInterface", "groups"="list"},
      * )
      *
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="Page for cities list pagination (1-indexed)")
-     * @Rest\QueryParam(name="count", requirements="\d+", default="10", description="Number of cities by page")
-     * @Rest\QueryParam(name="orderBy", map=true, requirements="ASC|DESC", nullable=true, strict=true, default="",description="Query cities order by clause (key is field, value is direction")
-     * @Rest\QueryParam(name="Name", nullable=true, description="Name")
+     * @Rest\QueryParam(name="limit", requirements="\d+", default="10", description="Number of cities by page")
      *
-     * @Rest\Get("/cities/", name="list", options={ "method_prefix" = false })
+     * @Rest\Get("/cities", name="list", options={ "method_prefix" = false })
      * @Rest\View(serializerGroups={"city-list"}, serializerEnableMaxDepthChecks=true)
      *
      * @param ParamFetcherInterface $paramFetcher
@@ -39,27 +37,25 @@ class CityController extends FOSRestController {
      * @return CityInterface[]
      */
     public function getListCityAction(ParamFetcherInterface $paramFetcher) {
-        $supportedFilters = array(
-            'name' => '',
-        );
 
         $page = $paramFetcher->get('page') - 1;
-        $count = $paramFetcher->get('count');
-        $orderBy = $paramFetcher->get('orderBy');
+        $limit = $paramFetcher->get('limit');
 
-        if (isset($orderBy[0]) || ($orderBy == "")) {
-            $orderBy = array('dateCreation' => 'DESC');
+        $citiesList = $this->get('doctrine_mongodb')->getManager()->getRepository('AppBundle:City')->getCityListApi($limit, $page);
+
+        //Reformat output
+        $citiesListOutput = array();
+        foreach ($citiesList as $id => $data) {
+            $city = array();
+            $city['id'] = $id;
+            $city['name'] = $data['name'];
+            $city['latitude'] = $data['coordinates']['latitude'];
+            $city['longitude'] = $data['coordinates']['longitude'];
+
+            $citiesListOutput[] = $city;
         }
 
-        $filters = array_intersect_key($paramFetcher->all(), $supportedFilters);
-
-        foreach ($filters as $key => $value) {
-            if (null === $value || (is_array($value) && empty($value))) {
-                unset($filters[$key]);
-            }
-        }
-
-        return $this->getDoctrine()->getManager()->getRepository('AppBundle:City')->getCityListApi($filters, $orderBy, $count, $page);
+        return $citiesListOutput;
     }
 
 }

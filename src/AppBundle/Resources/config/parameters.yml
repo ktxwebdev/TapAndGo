@@ -1,0 +1,7 @@
+parameters:
+    status_city:
+            activated: activated
+            desactivated: desactivated
+    status_station:
+            activated: activated
+            desactivated: desactivated

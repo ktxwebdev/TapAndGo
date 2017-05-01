@@ -3,11 +3,28 @@
     <head>
         <meta charset="UTF-8" />
         <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
+        {% block stylesheets %}
+            <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet"/>
+
+            {% stylesheets
+                '@bootstrap_css'
+                '@fontawesome_css' -%}
+            <link rel="stylesheet" href="{{ asset_url }}"/>
+            {% endstylesheets -%}
+
+        {% endblock stylesheets %}
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
     </head>
     <body>
-        {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
-    </body>
+        <div class="container">{% block body %}{% endblock %}</div>
+    {% block javascripts %}
+        {% javascripts
+            '@jquery_js'
+            '@bootstrap_js'
+            '@main_js'
+        %}
+        <script src="{{ asset_url }}" type="text/javascript"></script>
+        {% endjavascripts %}
+    {% endblock %}
+</body>
 </html>

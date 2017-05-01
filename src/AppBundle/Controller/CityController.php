@@ -45,7 +45,7 @@ class CityController extends Controller
     public function newAction()
     {
         $document = new City();
-        $form = $this->createForm(new CityType(), $document);
+        $form = $this->createForm(CityType::class, $document);
 
         return array(
             'document' => $document,
@@ -67,7 +67,7 @@ class CityController extends Controller
     public function createAction(Request $request)
     {
         $document = new City();
-        $form     = $this->createForm(new CityType(), $document);
+        $form     = $this->createForm(CityType::class, $document);
         $form->bind($request);
 
         if ($form->isValid()) {
@@ -136,7 +136,7 @@ class CityController extends Controller
             throw $this->createNotFoundException('Unable to find City document.');
         }
 
-        $editForm = $this->createForm(new CityType(), $document);
+        $editForm = $this->createForm(CityType::class, $document);
         $deleteForm = $this->createDeleteForm($id);
 
         return array(
@@ -171,7 +171,7 @@ class CityController extends Controller
         }
 
         $deleteForm = $this->createDeleteForm($id);
-        $editForm   = $this->createForm(new CityType(), $document);
+        $editForm   = $this->createForm(CityType::class, $document);
         $editForm->bind($request);
 
         if ($editForm->isValid()) {

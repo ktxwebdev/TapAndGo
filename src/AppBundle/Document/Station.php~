@@ -11,9 +11,11 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  *     repositoryClass="AppBundle\Document\StationRepository"
  * )
  * @ODM\ChangeTrackingPolicy("DEFERRED_IMPLICIT")
+ * 
+ * @ODM\Index(keys={"coordinates"="2d"})
  */
-class Station
-{
+class Station {
+
     /**
      * @var MongoId $id
      *
@@ -29,6 +31,13 @@ class Station
     protected $name;
 
     /**
+     * @var string $description
+     *
+     * @ODM\Field(type="string")
+     */
+    protected $description;
+
+    /**
      * @var string $address
      *
      * @ODM\Field(name="address", type="string")
@@ -36,32 +45,35 @@ class Station
     protected $address;
 
     /**
-     * @var string $lat
+     * @var string $latitude
      *
-     * @ODM\Field(name="lat", type="string")
+     * @ODM\Field(type="float")
      */
-    protected $lat;
+    protected $latitude;
 
     /**
-     * @var string $long
+     * @var string $longitude
      *
-     * @ODM\Field(name="long", type="string")
+     * @ODM\Field(type="float")
      */
-    protected $long;
+    protected $longitude;
+    
+    /** @ODM\EmbedOne(targetDocument="AppBundle\Document\Coordinates") */
+    public $coordinates;
 
     /**
-     * @var int $capacity
+     * @var int $bikesCapacity
      *
-     * @ODM\Field(name="capacity", type="int")
+     * @ODM\Field(type="int")
      */
-    protected $capacity;
+    protected $bikesCapacity;
 
     /**
-     * @var int $numberOfBikeAvailable
+     * @var int $bikesAvailable
      *
-     * @ODM\Field(name="numberOfBikeAvailable", type="int")
+     * @ODM\Field(type="int")
      */
-    protected $numberOfBikeAvailable;
+    protected $bikesAvailable;
 
     /**
      * @var string $status
@@ -70,168 +82,36 @@ class Station
      */
     protected $status;
 
+    /**
+     * @var array $stations
+     *
+     * @ODM\ReferenceOne(targetDocument="AppBundle\Document\City", simple=true)
+     */
+    protected $city;
 
     /**
-     * Get id
+     * @var string $creationDate
      *
-     * @return id $id
+     * @ODM\Field(type="date")
      */
-    public function getId()
-    {
-        return $this->id;
+    protected $creationDate;
+
+    /**
+     * @var string $lastUpdate
+     *
+     * @ODM\Field(type="date")
+     */
+    protected $lastUpdate;
+
+    public function __construct() {
+
+        $dateNow = new \DateTime();
+
+        $this->setCreationDate($dateNow);
+        $this->setLastUpdate($dateNow);
     }
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return self
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string $name
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * Set address
-     *
-     * @param string $address
-     * @return self
-     */
-    public function setAddress($address)
-    {
-        $this->address = $address;
-        return $this;
-    }
-
-    /**
-     * Get address
-     *
-     * @return string $address
-     */
-    public function getAddress()
-    {
-        return $this->address;
-    }
-
-    /**
-     * Set lat
-     *
-     * @param string $lat
-     * @return self
-     */
-    public function setLat($lat)
-    {
-        $this->lat = $lat;
-        return $this;
-    }
-
-    /**
-     * Get lat
-     *
-     * @return string $lat
-     */
-    public function getLat()
-    {
-        return $this->lat;
-    }
-
-    /**
-     * Set long
-     *
-     * @param string $long
-     * @return self
-     */
-    public function setLong($long)
-    {
-        $this->long = $long;
-        return $this;
-    }
-
-    /**
-     * Get long
-     *
-     * @return string $long
-     */
-    public function getLong()
-    {
-        return $this->long;
-    }
-
-    /**
-     * Set capacity
-     *
-     * @param int $capacity
-     * @return self
-     */
-    public function setCapacity($capacity)
-    {
-        $this->capacity = $capacity;
-        return $this;
-    }
-
-    /**
-     * Get capacity
-     *
-     * @return int $capacity
-     */
-    public function getCapacity()
-    {
-        return $this->capacity;
-    }
-
-    /**
-     * Set numberOfBikeAvailable
-     *
-     * @param int $numberOfBikeAvailable
-     * @return self
-     */
-    public function setNumberOfBikeAvailable($numberOfBikeAvailable)
-    {
-        $this->numberOfBikeAvailable = $numberOfBikeAvailable;
-        return $this;
-    }
-
-    /**
-     * Get numberOfBikeAvailable
-     *
-     * @return int $numberOfBikeAvailable
-     */
-    public function getNumberOfBikeAvailable()
-    {
-        return $this->numberOfBikeAvailable;
-    }
-
-    /**
-     * Set status
-     *
-     * @param string $status
-     * @return self
-     */
-    public function setStatus($status)
-    {
-        $this->status = $status;
-        return $this;
-    }
-
-    /**
-     * Get status
-     *
-     * @return string $status
-     */
-    public function getStatus()
-    {
-        return $this->status;
+    public function __toString() {
+        return $this->getName();
     }
 }

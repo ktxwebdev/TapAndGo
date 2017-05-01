@@ -1,22 +1,33 @@
-<h1>Station edit</h1>
+{% extends '::base.html.twig' %}
 
-<form action="{{ path('city_id_station_update', { 'id': document.id }) }}" method="post" {{ form_enctype(edit_form) }}>
-    {{ form_widget(edit_form) }}
-    <p>
-        <button type="submit">Edit</button>
-    </p>
-</form>
+{% block body %}
+    <div class="page-header">
+        <div class="row">
+            <div class="col-sm-10">
+                <h1>Station : {{ city.name }}</h1>
+            </div>
 
-<ul class="record_actions">
-    <li>
-        <a href="{{ path('city_id_station') }}">
-            Back to the list
-        </a>
-    </li>
-    <li>
-        <form action="{{ path('city_id_station_delete', { 'id': document.id }) }}" method="post">
-            {{ form_widget(delete_form) }}
-            <button type="submit">Delete</button>
-        </form>
-    </li>
-</ul>
+        </div>
+    </div>
+
+    <form action="{{ path('city_id_station_update', { 'id': city.id, 'idStation':document.id }) }}" method="post" {{ form_enctype(edit_form) }}>
+        {{ form_widget(edit_form) }}
+        <p>
+            <button type="submit">Mise à jour</button>
+        </p>
+    </form>
+
+    <ul class="record_actions">
+        <li>
+            <a href="{{ path('city_show', {'id': city.id}) }}">
+                Retour à la ville
+            </a>
+        </li>
+        <li>
+            <form action="{{ path('city_id_station_delete', { 'id':city.id, 'idStation': document.id }) }}" method="post">
+                {{ form_widget(delete_form) }}
+                <button type="submit">Supression</button>
+            </form>
+        </li>
+    </ul>
+{% endblock %}

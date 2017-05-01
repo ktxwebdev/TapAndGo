@@ -15,24 +15,7 @@ use AppBundle\Form\StationType;
  *
  * @Route("/city/{id}/station")
  */
-class StationController extends Controller
-{
-    /**
-     * Lists all Station documents.
-     *
-     * @Route("/", name="city_id_station")
-     * @Template()
-     *
-     * @return array
-     */
-    public function indexAction()
-    {
-        $dm = $this->getDocumentManager();
-
-        $documents = $dm->getRepository('AppBundle:Station')->findAll();
-
-        return array('documents' => $documents);
-    }
+class StationController extends Controller {
 
     /**
      * Displays a form to create a new Station document.
@@ -42,14 +25,17 @@ class StationController extends Controller
      *
      * @return array
      */
-    public function newAction()
-    {
+    public function newAction($id) {
         $document = new Station();
-        $form = $this->createForm(new StationType(), $document);
+        $form = $this->createForm(StationType::class, $document);
+
+        $dm = $this->getDocumentManager();
+        $city = $dm->getRepository('AppBundle:City')->find($id);
 
         return array(
+            'city' => $city,
             'document' => $document,
-            'form'     => $form->createView()
+            'form' => $form->createView()
         );
     }
 
@@ -64,23 +50,27 @@ class StationController extends Controller
      *
      * @return array
      */
-    public function createAction(Request $request)
-    {
+    public function createAction(Request $request, $id) {
         $document = new Station();
-        $form     = $this->createForm(new StationType(), $document);
+        $form = $this->createForm(StationType::class, $document);
         $form->bind($request);
 
         if ($form->isValid()) {
             $dm = $this->getDocumentManager();
+
+            $city = $dm->getRepository('AppBundle:City')->find($id);
+            $city->addStation($document);
+
             $dm->persist($document);
+            $dm->persist($city);
             $dm->flush();
 
-            return $this->redirect($this->generateUrl('city_id_station_show', array('id' => $document->getId())));
+            return $this->redirect($this->generateUrl('city_show', array('id' => $id)));
         }
 
         return array(
             'document' => $document,
-            'form'     => $form->createView()
+            'form' => $form->createView()
         );
     }
 
@@ -96,19 +86,19 @@ class StationController extends Controller
      *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If document doesn't exists
      */
-    public function showAction($id)
-    {
+    public function showAction($id, $idStation) {
         $dm = $this->getDocumentManager();
 
-        $document = $dm->getRepository('AppBundle:Station')->find($id);
+        $document = $dm->getRepository('AppBundle:Station')->find($idStation);
 
         if (!$document) {
             throw $this->createNotFoundException('Unable to find Station document.');
         }
 
-        $deleteForm = $this->createDeleteForm($id);
+        $deleteForm = $this->createDeleteForm($idStation);
 
         return array(
+            'idCity' => $id,
             'document' => $document,
             'delete_form' => $deleteForm->createView(),
         );
@@ -126,22 +116,24 @@ class StationController extends Controller
      *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If document doesn't exists
      */
-    public function editAction($id)
-    {
+    public function editAction($id, $idStation) {
         $dm = $this->getDocumentManager();
 
-        $document = $dm->getRepository('AppBundle:Station')->find($id);
+        $document = $dm->getRepository('AppBundle:Station')->find($idStation);
 
         if (!$document) {
             throw $this->createNotFoundException('Unable to find Station document.');
         }
 
-        $editForm = $this->createForm(new StationType(), $document);
-        $deleteForm = $this->createDeleteForm($id);
+        $editForm = $this->createForm(StationType::class, $document);
+        $deleteForm = $this->createDeleteForm($idStation);
+
+        $city = $dm->getRepository('AppBundle:City')->find($id);
 
         return array(
-            'document'    => $document,
-            'edit_form'   => $editForm->createView(),
+            'city' => $city,
+            'document' => $document,
+            'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
         );
     }
@@ -160,30 +152,29 @@ class StationController extends Controller
      *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If document doesn't exists
      */
-    public function updateAction(Request $request, $id)
-    {
+    public function updateAction(Request $request, $id, $idStation) {
         $dm = $this->getDocumentManager();
 
-        $document = $dm->getRepository('AppBundle:Station')->find($id);
+        $document = $dm->getRepository('AppBundle:Station')->find($idStation);
 
         if (!$document) {
             throw $this->createNotFoundException('Unable to find Station document.');
         }
 
-        $deleteForm = $this->createDeleteForm($id);
-        $editForm   = $this->createForm(new StationType(), $document);
+        $deleteForm = $this->createDeleteForm($idStation);
+        $editForm = $this->createForm(StationType::class, $document);
         $editForm->bind($request);
 
         if ($editForm->isValid()) {
             $dm->persist($document);
             $dm->flush();
 
-            return $this->redirect($this->generateUrl('city_id_station_edit', array('id' => $id)));
+            return $this->redirect($this->generateUrl('city_id_station_edit', array('id' => $id, 'idStation' => $idStation)));
         }
 
         return array(
-            'document'    => $document,
-            'edit_form'   => $editForm->createView(),
+            'document' => $document,
+            'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
         );
     }
@@ -201,31 +192,34 @@ class StationController extends Controller
      *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If document doesn't exists
      */
-    public function deleteAction(Request $request, $id)
-    {
-        $form = $this->createDeleteForm($id);
+    public function deleteAction(Request $request, $id, $idStation) {
+        $form = $this->createDeleteForm($idStation);
         $form->bind($request);
 
         if ($form->isValid()) {
             $dm = $this->getDocumentManager();
-            $document = $dm->getRepository('AppBundle:Station')->find($id);
+            $document = $dm->getRepository('AppBundle:Station')->find($idStation);
 
             if (!$document) {
                 throw $this->createNotFoundException('Unable to find Station document.');
             }
 
+            $city = $dm->getRepository('AppBundle:City')->find($id);
+
+            $city->removeStation($document);
+
+            $dm->persist($city);
             $dm->remove($document);
             $dm->flush();
         }
 
-        return $this->redirect($this->generateUrl('city_id_station'));
+        return $this->redirect($this->generateUrl('city_show', array('id' => $id)));
     }
 
-    private function createDeleteForm($id)
-    {
-        return $this->createFormBuilder(array('id' => $id))
-            ->add('id', 'hidden')
-            ->getForm()
+    private function createDeleteForm($idStation) {
+        return $this->createFormBuilder(array('id' => $idStation))
+                        ->add('id', 'hidden')
+                        ->getForm()
         ;
     }
 
@@ -234,8 +228,8 @@ class StationController extends Controller
      *
      * @return DocumentManager
      */
-    private function getDocumentManager()
-    {
+    private function getDocumentManager() {
         return $this->get('doctrine.odm.mongodb.document_manager');
     }
+
 }

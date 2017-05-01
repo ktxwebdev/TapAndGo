@@ -15,29 +15,25 @@ class CityRepository extends DocumentRepository {
     /**
      * Get City List for the API
      * 
-     * @param type $filters
-     * @param type $orderBy
      * @param type $count
      * @param type $page
-     * @return type
+     * 
+     * @return array
      */
-    public function getCityListApi($filters, $orderBy, $count, $page) {
+    public function getCityListApi($count, $page) {
 
         $qb = $this->createQueryBuilder('city');
 
-        foreach ($filters as $name => $data) {
+        $qb->select('id', 'name', 'coordinates');
 
-            $filterDataName = 'filterData' . $name;
-            $filterDataNameParam = ':filterData' . $name;
+        $qb->skip($page * $count);
+        $qb->limit($count);
 
-            $qb->andWhere($qb->expr()->like('city.' . $name, $filterDataNameParam));
-            $qb->setParameter($filterDataName, '%' . $data . '%');
-        }
+        $qb->hydrate(false);
 
-        $qb->setFirstResult($page * $count);
-        $qb->setMaxResults($count);
+        $query = $qb->getQuery();
 
-        return $qb->getQuery()->getArrayResult();
+        return $query->execute()->toArray();
     }
 
 }

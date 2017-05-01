@@ -5,31 +5,38 @@ namespace AppBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use AppBundle\Form\CoordinatesType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
-class StationType extends AbstractType
-{
-    public function buildForm(FormBuilderInterface $builder, array $options)
-    {
-        $builder
-            ->add('name')
-            ->add('address')
-            ->add('lat')
-            ->add('long')
-            ->add('capacity')
-            ->add('numberOfBikeAvailable')
-            ->add('status')
-        ;
+class StationType extends AbstractType {
+
+    private $stationStatus;
+
+    public function __construct($stationStatus) {
+        $this->stationStatus = $stationStatus;
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
-    {
+    public function buildForm(FormBuilderInterface $builder, array $options) {
+
+        $builder->add('name');
+        $builder->add('address');
+        $builder->add('coordinates', CoordinatesType::class);
+        $builder->add('bikesCapacity');
+        $builder->add('bikesAvailable');
+        $builder->add('status', ChoiceType::class, array(
+            'choices' => $this->stationStatus
+                )
+        );
+    }
+
+    public function setDefaultOptions(OptionsResolverInterface $resolver) {
         $resolver->setDefaults(array(
             'data_class' => 'AppBundle\Document\Station'
         ));
     }
 
-    public function getName()
-    {
+    public function getName() {
         return 'appbundle_stationtype';
     }
+
 }

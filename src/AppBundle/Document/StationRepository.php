@@ -15,29 +15,54 @@ class StationRepository extends DocumentRepository {
     /**
      * Get Station List for the API
      * 
-     * @param type $filters
-     * @param type $orderBy
-     * @param type $count
+     * @param type $limit
      * @param type $page
+     * @param int $cityId
+     * 
      * @return type
      */
-    public function getStationListApi($filters, $orderBy, $count, $page) {
+    public function getStationListApi($limit, $page, $cityId) {
 
-        $qb = $this->createQueryBuilder('city');
+        $qb = $this->createQueryBuilder('station');
 
-        foreach ($filters as $name => $data) {
+        $qb->select('id', 'creationDate', 'lastUpdate', 'name', 'address', 'description', 'coordinates', 'bikesCapacity', 'bikesAvailable');
 
-            $filterDataName = 'filterData' . $name;
-            $filterDataNameParam = ':filterData' . $name;
+        $qb->field('city')->equals($cityId);
 
-            $qb->andWhere($qb->expr()->like('city.' . $name, $filterDataNameParam));
-            $qb->setParameter($filterDataName, '%' . $data . '%');
-        }
+        $qb->skip($page * $limit);
+        $qb->limit($limit);
 
-        $qb->setFirstResult($page * $count);
-        $qb->setMaxResults($count);
+        $qb->hydrate(false);
 
-        return $qb->getQuery()->getArrayResult();
+        $query = $qb->getQuery();
+
+        return $query->execute()->toArray();
+    }
+
+    /**
+     * Get Station List Near for the API
+     * 
+     * @param float $lat
+     * @param float $lng
+     * @param int   $radius
+     * @param int   $limit
+     * 
+     * @return array
+     */
+    public function getStationListNearApi($lat, $lng, $radius, $limit) {
+
+        $qb = $this->createQueryBuilder('station');
+
+        $qb->nearSphere((float) $lng, (float) $lat);
+        $qb->maxDistance($radius);
+
+        $qb->limit($limit);
+
+        $qb->hydrate(false);
+
+        $query = $qb->getQuery();
+
+        return $query->execute()->toArray();
     }
 
 }

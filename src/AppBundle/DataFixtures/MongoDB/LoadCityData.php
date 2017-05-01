@@ -35,6 +35,7 @@ class LoadCityData extends AbstractFixture implements OrderedFixtureInterface, F
         for ($i = 0; $i <= 100; $i++) {
             $city = $this->faker->objectCity();
 
+            $manager->persist($city->getCoordinates());
             $manager->persist($city);
 
             $this->addReference('city-' . $i, $city);

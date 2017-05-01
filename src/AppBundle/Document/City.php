@@ -11,6 +11,8 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  *     repositoryClass="AppBundle\Document\CityRepository"
  * )
  * @ODM\ChangeTrackingPolicy("DEFERRED_IMPLICIT")
+ * 
+ * @ODM\Index(keys={"coordinates"="2d"})
  */
 class City
 {
@@ -28,19 +30,8 @@ class City
      */
     protected $name;
 
-    /**
-     * @var string $lat
-     *
-     * @ODM\Field(name="lat", type="string")
-     */
-    protected $lat;
-
-    /**
-     * @var string $long
-     *
-     * @ODM\Field(name="long", type="string")
-     */
-    protected $long;
+    /** @ODM\EmbedOne(targetDocument="AppBundle\Document\Coordinates") */
+    public $coordinates;
 
     /**
      * @var string $status
@@ -94,47 +85,25 @@ class City
     }
 
     /**
-     * Set lat
+     * Set coordinates
      *
-     * @param string $lat
+     * @param AppBundle\Document\Coordinates $coordinates
      * @return self
      */
-    public function setLat($lat)
+    public function setCoordinates(\AppBundle\Document\Coordinates $coordinates)
     {
-        $this->lat = $lat;
+        $this->coordinates = $coordinates;
         return $this;
     }
 
     /**
-     * Get lat
+     * Get coordinates
      *
-     * @return string $lat
+     * @return AppBundle\Document\Coordinates $coordinates
      */
-    public function getLat()
+    public function getCoordinates()
     {
-        return $this->lat;
-    }
-
-    /**
-     * Set long
-     *
-     * @param string $long
-     * @return self
-     */
-    public function setLong($long)
-    {
-        $this->long = $long;
-        return $this;
-    }
-
-    /**
-     * Get long
-     *
-     * @return string $long
-     */
-    public function getLong()
-    {
-        return $this->long;
+        return $this->coordinates;
     }
 
     /**
@@ -158,7 +127,7 @@ class City
     {
         return $this->status;
     }
-    
+
     /**
      * Add station
      *
